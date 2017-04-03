@@ -10,7 +10,7 @@ import (
 
 func main() {
 	//add ExecStart=/usr/bin/dockerd -H unix:///var/run/docker.sock -H tcp://ip:2735 in dokcer.service
-	//systemctl daeom-reload & systemctl restart docker.service
+	//systemctl daemon-reload & systemctl restart docker.service
 	// and try "docker -H tcp://ip:2735 ps -a" to see if the setting works
 	defaultHeaders := map[string]string{"User-Agent": "engine-api-cli-1.0"}
 	cli, err := client.NewClient("tpc://ip:2735", "v1.22", nil, defaultHeaders)
