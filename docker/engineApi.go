@@ -24,6 +24,8 @@ func main() {
 }
 
 func TestExec(cli *client.Client,  name string){
+	                                                                                                        // for cmd param, the first start is the main command , and another is param
+														// we can set like "[]string{"/test.sh","name"}" ,means give param "name" to shell test.sh
 	responseExc,err := cli.ContainerExecCreate(context.Background(),name,types.ExecConfig{User: "root",Cmd: []string{"/test.sh"},Privileged: true})
 
 	if err!=nil {
