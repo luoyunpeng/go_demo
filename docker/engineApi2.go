@@ -17,12 +17,12 @@ var waitGroup sync.WaitGroup
 const  (
 	imageName string = "api:1.0"
 	name string = "engine"
-	num int =15
+	num int =10
 )
 func main() {
 	startTime := time.Now()
 	hostConf := make(map[string]string,num)
-	dockerClient := InitClient("ip")
+	dockerClient := InitClient("192.168.1.76")
 
 	fmt.Println("create container ")
 	waitGroup.Add(1)
@@ -42,18 +42,25 @@ func main() {
 	go CopyHostToAll(dockerClient,"/opt/tmpconfig/hosts/scpHost.sh",hostConf)
 	waitGroup.Wait()
 
-	/*//remove repeat hosts
-	removeRepeat := CopyHostToAll
+	//3 remove repeat hosts
 	waitGroup.Add(1)
-	go removeRepeat(dockerClient,"/opt/tmpconfig/hosts/removeRepeatHosts.sh ",hostConf)
+	go RemoveRepeatHosts(dockerClient,"/opt/tmpconfig/hosts/removeRepeatHosts.sh ",hostConf)
 	waitGroup.Wait()
-	fmt.Println("it takes ",time.Now().Sub(startTime)," to create and config containers")*/
+	fmt.Println("it takes ",time.Now().Sub(startTime)," to create and config containers")
+}
+
+func RemoveRepeatHosts(dockerClient *client.Client,cmd string,hostConf map[string]string)  {
+	for containerName := range hostConf{
+		waitGroup.Add(1)
+		go ExecuteCMD(dockerClient,containerName,cmd,containerName,"")
+	}
+	waitGroup.Done()
 }
 
 func CopyHostToAll(dockerClient *client.Client,cmd string,hostConf map[string]string)  {
 	for containerName := range hostConf{
 		waitGroup.Add(1)
-		go ExecuteCMD(dockerClient,cmd,containerName,"")
+		go ExecuteCMD(dockerClient,name+strconv.Itoa(1),cmd,containerName,"")
 	}
 	waitGroup.Done()
 }
@@ -61,7 +68,7 @@ func CopyHostToAll(dockerClient *client.Client,cmd string,hostConf map[string]st
 func ConfigHosts(dockerClient *client.Client,cmd string,hostConf map[string]string)  {
 	for containerName,ip := range hostConf{
 		waitGroup.Add(1)
-		go ExecuteCMD(dockerClient,cmd,containerName,ip)
+		go ExecuteCMD(dockerClient,name+strconv.Itoa(1),cmd,ip,containerName)
 	}
 	waitGroup.Done()
 }
@@ -85,9 +92,9 @@ func InitClient(ip string) *client.Client  {
 	return  cli
 }
 
-func ExecuteCMD(dockerClient *client.Client,  cmd,firstParam,secondParam string){
+func ExecuteCMD(dockerClient *client.Client,  executeCName,cmd,firstParam,secondParam string){
 	fmt.Println("execute the command ",cmd+firstParam+secondParam)
-	execResponse,err := dockerClient.ContainerExecCreate(context.Background(), name+strconv.Itoa(1) ,types.ExecConfig{User: "root",Cmd: []string{cmd,"  "+firstParam+"  ",secondParam },Privileged: true})
+	execResponse,err := dockerClient.ContainerExecCreate(context.Background(), executeCName ,types.ExecConfig{User: "root",Cmd: []string{cmd,firstParam,secondParam },Privileged: true})
 
 	if err!=nil {
 		panic(err)
@@ -123,7 +130,7 @@ func ContainStart(dockerClient *client.Client, num int, name string, containerHo
 
 func GetContainList()  {
 	defaultHeaders := map[string]string{"User-Agent": "engine-api-cli-1.0"}
-	cli, err := client.NewClient("tpc://ip:2735", "v1.22", nil, defaultHeaders)
+	cli, err := client.NewClient("tpc://192.168.1.76:2735", "v1.22", nil, defaultHeaders)
 	if err != nil {
 		panic(err)
 	}
@@ -143,3 +150,4 @@ func GetContainList()  {
 
 	//cli.ContainerStop(context.Background(), "test", nil)
 }
+
