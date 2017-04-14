@@ -1,6 +1,5 @@
 package main
 
-
 import (
 	"github.com/docker/engine-api/client"
 	"strconv"
