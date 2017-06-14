@@ -12,5 +12,5 @@ func Print(a int) {
 	if a > 5 {
 		fmt.Print(":: ", a)
 	}
-	fmt.Print("let's do it ")
+	fmt.Print("let's do it man")
 }
