@@ -1,3 +1,3 @@
 # how-to-start
 new start
-go go go
+using docker rest api to start cluster zookeeper
