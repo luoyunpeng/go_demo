@@ -1,5 +1,2 @@
 # how-to-start
-new start
-using docker rest api to start cluster zookeeper
-
-test pull
+using docker rest api to start cluster zookeeper,hdfs and hbase(HDP)
