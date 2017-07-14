@@ -40,7 +40,7 @@ func main() {
 
 	//2 configure and start zookeeper & HDFS, because this two component do not influence each other.
 	go ZooConfAndStart()
-	go  HDFSConfAndStart()
+	go HDFSConfAndStart()
 
 	//3 hbase start
 	waitGroup.Add(1)
